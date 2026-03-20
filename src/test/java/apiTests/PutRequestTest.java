@@ -9,33 +9,36 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class PutRequestTest {
+// 1. EXTENDS: Dinamik Base URI mimarisine entegre ediliyor
+public class PutRequestTest extends JsonPlaceholderBase {
 
     @Test
-    public void testVeriGuncellePUT() {
-        // 1. Hedef Koordinat (1 numaralı gönderiyi vuracağız)
-        String url = "https://jsonplaceholder.typicode.com/posts/1";
+    public void testUpdateExistingPost() {
 
-        // 2. Yeni Cephane (Eski veriyi ezecek olan Map)
-        Map<String, Object> guncelCephane = new HashMap<>();
-        guncelCephane.put("title", "Kahin Güncellemesi: Kod Adı PUT");
-        guncelCephane.put("body", "Düşman verisi başarıyla imha edildi, yerine Karargah verisi yazıldı!");
-        guncelCephane.put("userId", 1);
-        guncelCephane.put("id", 1);
+        // Preparing the payload for the update operation (Güncelleme için istek gövdesinin hazırlanması)
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("title", "Updated Title: SDET Architecture");
+        requestBody.put("body", "This post has been updated using professional PUT request standards.");
+        requestBody.put("userId", 1);
+        requestBody.put("id", 1);
 
-        System.out.println("Hedefteki veri güncelleniyor (PUT)...");
+        System.out.println("INFO: Sending PUT request to /posts/1 endpoint...");
 
-        // 3. TETİĞE BAS!
+        // Executing the API request
         Response response = given()
+                .spec(spec) // Base class'tan gelen dinamik URL
                 .contentType(ContentType.JSON)
-                .body(guncelCephane)
+                .body(requestBody)
                 .when()
-                .put(url);
+                .put("/posts/1"); // Sadece endpoint belirtiliyor
 
-        // 4. Rapor ve Doğrulama
+        // Logging the response
+        System.out.println("INFO: Response body received from server:");
         response.prettyPrint();
+
+        // Assertions
         response.then().statusCode(200);
 
-        System.out.println("PUT BAŞARILI: Veri başarıyla güncellendi!");
+        System.out.println("SUCCESS: Post updated successfully. Status Code: 200 verified.");
     }
 }

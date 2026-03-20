@@ -5,24 +5,27 @@ import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
 
-// 1. EXTENDS SİLAHI: "JsonPlaceholderBase" sınıfına telsizle bağlanıyoruz!
+// Extending the base class to inherit the dynamic RequestSpecification (spec)
 public class DynamicGetTest extends JsonPlaceholderBase {
 
     @Test
-    public void testDinamikKeşifUcusu() {
+    public void testGetSinglePost() {
 
-        System.out.println("Dinamik Karargah devrede, keşif uçağı kalktı...");
+        System.out.println("INFO: Sending GET request to /posts/1 endpoint...");
 
-        // 2. DİNAMİK ATEŞ: "https://..." yazmak yok! Ana adres Base sınıftan (spec) geliyor.
+        // Executing the API request using the inherited 'spec'
         Response response = given()
-                .spec(spec) // "Adresi Base sınıftan al"
+                .spec(spec) // Inherited from JsonPlaceholderBase
                 .when()
-                .get("/posts/1"); // Sadece gidilecek hedef odayı yazıyoruz!
+                .get("/posts/1"); // Endpoint only
 
-        // 3. Rapor ve Doğrulama
+        // Logging the response for debugging
+        System.out.println("INFO: Response body received from server:");
         response.prettyPrint();
+
+        // Assertions
         response.then().statusCode(200);
 
-        System.out.println("✅ DİNAMİK GET BAŞARILI: Mimari tıkır tıkır çalışıyor!");
+        System.out.println("SUCCESS: Single post retrieved successfully. Status Code: 200 verified.");
     }
 }

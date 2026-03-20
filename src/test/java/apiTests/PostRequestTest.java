@@ -4,42 +4,40 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
-// Yeni importları ekliyoruz (Map kullanmak için)
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class PostRequestTest {
+// 1. EXTENDS: Dinamik Base URI mimarisine entegre ediliyor
+public class PostRequestTest extends JsonPlaceholderBase {
 
     @Test
-    public void testSistemeVeriYazdir() {
+    public void testCreateNewPost() {
 
-        // 1. Hedef Koordinatlar
-        String url = "https://jsonplaceholder.typicode.com/posts";
+        // Preparing the request payload (İstek gövdesinin hazırlanması)
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("title", "SDET Professional Automation");
+        requestBody.put("body", "Implementing dynamic base URI and professional logging.");
+        requestBody.put("userId", 1);
 
-        // 2. Siber Cephaneyi Profesyonelce Hazırlıyoruz (String yerine Map kullanıyoruz)
-        Map<String, Object> siberCephane = new HashMap<>();
-        siberCephane.put("title", "Kahin Operasyonu");
-        siberCephane.put("body", "Karargah hedefe ulaştı. SDET yolda!");
-        siberCephane.put("userId", 1);
+        System.out.println("INFO: Sending POST request to /posts endpoint...");
 
-        System.out.println("📡 Hedefe veri gönderiliyor...");
-
-        // 3. TETİĞE BAS! (POST İstegi)
+        // Executing the API request (API isteğinin gönderilmesi)
         Response response = given()
+                .spec(spec) // Base class'tan gelen dinamik URL yapısı
                 .contentType(ContentType.JSON)
-                .body(siberCephane) // Map'i veriyoruz, RestAssured onu otomatik JSON'a çevirecek!
+                .body(requestBody)
                 .when()
-                .post(url);
+                .post("/posts"); // Sadece endpoint belirtiliyor
 
-        // 4. Sonuç Raporu
-        System.out.println("Karşı Sunucunun Cevabı:");
+        // Logging the response for debugging (Hata ayıklama için yanıtın yazdırılması)
+        System.out.println("INFO: Response body received from server:");
         response.prettyPrint();
 
-        // 5. Doğrulama (Assertion)
+        // Assertions (Doğrulamalar)
         response.then().statusCode(201);
 
-        System.out.println("✅ SIZMA BAŞARILI: Kendi verimiz karşı sisteme yazdırıldı (Durum Kodu: 201)");
+        System.out.println("SUCCESS: Post created successfully. Status Code: 201 verified.");
     }
 }

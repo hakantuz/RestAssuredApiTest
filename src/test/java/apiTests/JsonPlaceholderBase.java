@@ -6,13 +6,13 @@ import org.testng.annotations.BeforeMethod;
 
 public class JsonPlaceholderBase {
 
-    // Bütün testlerin kullanacağı ortak telsiz frekansı (Mühimmat)
+    // Shared request specification for all test classes (Tüm testler için ortak istek şablonu)
     protected RequestSpecification spec;
 
-    // @BeforeMethod: TestNG'ye "Her testten önce mutlaka bu ayarı kur" diyoruz.
+    // @BeforeMethod ensures this setup runs before every @Test method
     @BeforeMethod
     public void setUp() {
-        // Düşmanın ana karargah adresini (Base URI) bir kere buraya sabitliyoruz.
+        // Setting up the base URI dynamically for the entire framework (Ana adresin dinamik olarak tanımlanması)
         spec = new RequestSpecBuilder()
                 .setBaseUri("https://jsonplaceholder.typicode.com")
                 .build();

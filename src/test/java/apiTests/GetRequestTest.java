@@ -7,52 +7,56 @@ import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
 
-public class GetRequestTest {
+// 1. EXTENDS: Dinamik Base URI mimarisine entegre ediliyor
+public class GetRequestTest extends JsonPlaceholderBase {
 
     @Test
-    public void testSistemiSorgula() {
+    public void testGetAllUsers() {
 
-        // 1. YENİ HEDEF: JSONPlaceholder (Güvenlik duvarı olmayan açık veri tabanı)
-        String url = "https://jsonplaceholder.typicode.com/users";
-        System.out.println("📡 Yeni hedefe kilitlenildi: " + url);
+        System.out.println("INFO: Sending GET request to /users endpoint...");
 
-        // 2. TETİĞE BAS! (Burada sahte kimliğe gerek yok, kapılar açık)
+        // Executing the API request dynamically (Dinamik API isteği)
         Response response = given()
+                .spec(spec) // Base class'tan gelen dinamik URL
                 .accept("application/json")
                 .when()
-                .get(url);
+                .get("/users"); // Sadece endpoint belirtiliyor
 
-        // 3. Ele Geçirilen İstihbarat
-        System.out.println("Ele Geçirilen Veriler (JSON Formatında):");
+        // Logging the response
+        System.out.println("INFO: Response body received from server:");
         response.prettyPrint();
 
-        // 4. Doğrulama (Vuruş Başarılı mı?)
+        // Assertions
         response.then().statusCode(200);
 
-        System.out.println("OPERASYON BAŞARILI: Demir kubbe aşıldı, veriler alındı!");
+        System.out.println("SUCCESS: Users retrieved successfully. Status Code: 200 verified.");
     }
 
     @Test
-    public void testKullaniciVerisiniDogrula() {
-        String url = "https://jsonplaceholder.typicode.com/users";
+    public void testVerifySpecificUserData() {
 
-        // Veriyi al
-        Response response = given().when().get(url);
+        System.out.println("INFO: Sending GET request to /users endpoint for data verification...");
 
-        // JsonPath Haritasını Çıkar
+        // Executing the API request
+        Response response = given()
+                .spec(spec) // Base class'tan gelen dinamik URL
+                .when()
+                .get("/users");
+
+        // Extracting JSON Path for assertions (Doğrulama için JSON haritasının çıkarılması)
         JsonPath jsonPath = response.jsonPath();
 
-        // Haritada hedefi bul (Dizideki 1. index, yani id=2 olan kişi)
-        String aranacakIsim = jsonPath.getString("[1].name"); // Array'in 1. elemanının name'i
-        String aranacakEmail = jsonPath.getString("[1].email");
+        // Extracting target data (Index 1 -> id=2)
+        String targetName = jsonPath.getString("[1].name");
+        String targetEmail = jsonPath.getString("[1].email");
 
-        System.out.println("🕵️ Hedefin Adı: " + aranacakIsim);
-        System.out.println("🕵️ Hedefin E-postası: " + aranacakEmail);
+        System.out.println("INFO: Target Name extracted: " + targetName);
+        System.out.println("INFO: Target Email extracted: " + targetEmail);
 
-        // TEST ET (Asıl olay burada kopuyor)
-        Assert.assertEquals(aranacakIsim, "Ervin Howell", "İsim eşleşmedi!");
-        Assert.assertEquals(aranacakEmail, "Shanna@melissa.tv", "Email eşleşmedi!");
+        // Assertions (TestNG ile verilerin doğrulanması)
+        Assert.assertEquals(targetName, "Ervin Howell", "ERROR: Name mismatch!");
+        Assert.assertEquals(targetEmail, "Shanna@melissa.tv", "ERROR: Email mismatch!");
 
-        System.out.println("✅ İSTİHBARAT DOĞRULANDI: Aranan kişi sistemde mevcut!");
+        System.out.println("SUCCESS: Target user data verified successfully.");
     }
 }
